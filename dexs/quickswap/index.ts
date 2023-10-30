@@ -39,7 +39,7 @@ const graphsV3 = getChainVolume({
 });
 
 
-const fetchClob = () => {
+const fetchLiquidityHub = () => {
   return async () => {
     let dailyResult = (await fetchURL('https://hub.orbs.network/analytics-daily/v1')).data;
     
@@ -79,9 +79,9 @@ const adapter: BreakdownAdapter = {
         start: async () => 1679875200
       },
     },
-    clob: {
+    liquidityHub: {
       [CHAIN.POLYGON]: {
-        fetch: fetchClob(),
+        fetch: fetchLiquidityHub(),
         start: async () => 1695042000
       },
     },
