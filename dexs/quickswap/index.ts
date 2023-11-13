@@ -1,3 +1,4 @@
+import { log, time } from "console";
 import { BreakdownAdapter } from "../../adapters/types";
 import { CHAIN } from "../../helpers/chains";
 import { DEFAULT_DAILY_VOLUME_FACTORY, DEFAULT_DAILY_VOLUME_FIELD, DEFAULT_TOTAL_VOLUME_FACTORY, DEFAULT_TOTAL_VOLUME_FIELD, getChainVolume } from "../../helpers/getUniSubgraphVolume";
@@ -40,11 +41,15 @@ const graphsV3 = getChainVolume({
 
 
 const fetchLiquidityHub = () => {
-  return async () => {
-    let dailyResult = (await fetchURL('https://hub.orbs.network/analytics-daily/v1')).data;
-    
+  return async (timestamp: number) => {
+    let dailyResult = (await fetchURL('https://hub.orbs.network/analytics-daily/v1')).data;    
     let rows = dailyResult.result.rows;
-    let lastDay = rows[rows.length - 1];
+    
+    const targetDate = new Date(timestamp * 1000); // Convert timestamp to milliseconds
+    const targetDateString = targetDate.toISOString().split('T')[0]; // Get the YYYY-MM-DD part
+      
+    let lastDay = rows.find((row: any) => row.day === targetDateString) || rows[rows.length - 2];
+    
     let dailyVolume = lastDay.daily_received_calculated_value;
     let totalVolume = (await fetchURL(`https://hub.orbs.network/analytics/v1`)).data.result.rows[0].total_calculated_value;
 
